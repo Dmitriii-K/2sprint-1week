@@ -1,12 +1,14 @@
 import { Response, Request, NextFunction } from "express";
 import { body, validationResult, query, param } from "express-validator";
 import { SETTINGS } from "../settings";
-import { blogCollection } from "../db/mongo-db";
+import { blogCollection, userCollection } from "../db/mongo-db";
 import { ObjectId } from "mongodb";
 import { SortDirection } from "../input-output-types/eny-type";
 
 const urlPattern =
   /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
+const imailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const loginPattern = /^[a-zA-Z0-9_-]*$/;
 
 export const blogInputValidation = [
   body("name")
@@ -104,6 +106,48 @@ export const postInputValidation = [
     .withMessage(""),
 ];
 
+export const userInputValidation = [
+  body("login")
+    .isString()
+    .withMessage("not string")
+    .trim()
+    .not()
+    .isEmpty()
+    .matches(loginPattern)
+    .withMessage("not login")
+    .isLength({ min: 3, max: 10 })
+    .withMessage("Invalid login")
+    .custom(async (value) => {
+      const user = await userCollection.findOne({ login: value });
+      if (user) {
+        return Promise.reject("Login is already in use");
+      }
+    }),
+  body("password")
+    .isString()
+    .withMessage("not string")
+    .trim()
+    .not()
+    .isEmpty()
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Invalid password"),
+  body("email")
+    .isString()
+    .withMessage("not string")
+    .trim()
+    .not()
+    .isEmpty()
+    .matches(imailPattern)
+    .isEmail()
+    .withMessage("Invalid email format")
+    .custom(async (value) => {
+      const user = await userCollection.findOne({ email: value });
+      if (user) {
+        return Promise.reject("Email is already in use");
+      }
+    }),
+];
+
 export const inputCheckErrorsMiddleware = (
   req: Request,
   res: Response,
@@ -167,5 +211,20 @@ export const halper = (query: {
       ? (query.sortDirection as SortDirection)
       : "desc",
     searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
+  };
+};
+
+export const userPagination = (query: {
+  [key: string]: string | number | undefined;
+}): any => {
+  return {
+    pageNumber: query.pageNumber ? +query.pageNumber : 1,
+    pageSize: query.pageSize ? +query.pageSize : 10,
+    sortBy: query.sortBy ? query.sortBy : "createdAt",
+    sortDirection: query.sortDirection
+      ? (query.sortDirection as SortDirection)
+      : "desc",
+    searchLoginTerm: query.searchLoginTerm ? query.searchLoginTerm : null,
+    searchEmailTerm: query.searchEmailTerm ? query.searchEmailTerm : null,
   };
 };
