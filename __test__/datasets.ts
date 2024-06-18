@@ -1,4 +1,4 @@
-import { DBBlogType, DBPostType } from "../src/db/db";
+// import { DBBlogType, DBPostType } from "../src/db/db";
 import { SETTINGS } from "../src/settings";
 import { BlogViewModel } from "../src/input-output-types/blogs-type";
 import { PostViewModel } from "../src/input-output-types/posts-type";

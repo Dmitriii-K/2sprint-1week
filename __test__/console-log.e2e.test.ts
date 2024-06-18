@@ -16,11 +16,11 @@ describe("/blogs", () => {
   const blogId = new ObjectId();
   const createDate = new Date().toISOString();
 
-  it("should create", async () => {
+  it("should create blog", async () => {
     await blogCollection.drop();
     const newBlog: BlogInputModel = {
       name: "string",
-      description: "string",
+      description: "stringdescription",
       websiteUrl: "https://YUISbofyirb6dFmevNl151zv",
     };
 
@@ -30,7 +30,7 @@ describe("/blogs", () => {
       .send(newBlog) // отправка данных
       .expect(201);
 
-    // console.log(res.body)
+    console.log(res.body); // посметреть ответ эндпоинта
 
     expect(res.body.name).toEqual(newBlog.name);
     expect(res.body.description).toEqual(newBlog.description);
@@ -38,5 +38,50 @@ describe("/blogs", () => {
     expect(typeof res.body.id).toEqual("string");
 
     expect(res.body).toEqual(blogCollection);
+  });
+  it("should get TESTING", async () => {
+    const res = await req.get(SETTINGS.PATH.TESTING).expect(200); // проверка наличия эндпоинта
+
+    console.log(res.status);
+    console.log(res.body); // посметреть ответ эндпоинта
+
+    expect(res.body.length).toBe(0); // проверяем ответ эндпоинта
+    expect(1).toBe(1); // проверяем ответ эндпоинта
+  });
+  it("should get BLOGS", async () => {
+    const res = await req.get(SETTINGS.PATH.BLOGS).expect(200); // проверка наличия эндпоинта
+
+    console.log(res.status);
+    console.log(res.body); // посметреть ответ эндпоинта
+
+    expect(res.body.length).toBe(0); // проверяем ответ эндпоинта
+    expect(1).toBe(1); // проверяем ответ эндпоинта
+  });
+  it("should get POSTS", async () => {
+    const res = await req.get(SETTINGS.PATH.POSTS).expect(200); // проверка наличия эндпоинта
+
+    console.log(res.status);
+    console.log(res.body); // посметреть ответ эндпоинта
+
+    expect(res.body.length).toBe(0); // проверяем ответ эндпоинта
+    expect(1).toBe(1); // проверяем ответ эндпоинта
+  });
+  it("should get USERS", async () => {
+    const res = await req.get(SETTINGS.PATH.USERS).expect(200); // проверка наличия эндпоинта
+
+    console.log(res.status);
+    console.log(res.body); // посметреть ответ эндпоинта
+
+    expect(res.body.length).toBe(0); // проверяем ответ эндпоинта
+    expect(1).toBe(1); // проверяем ответ эндпоинта
+  });
+  it("should get AUTH", async () => {
+    const res = await req.get(SETTINGS.PATH.AUTH).expect(200); // проверка наличия эндпоинта
+
+    console.log(res.status);
+    console.log(res.body); // посметреть ответ эндпоинта
+
+    expect(res.body.length).toBe(0); // проверяем ответ эндпоинта
+    expect(1).toBe(1); // проверяем ответ эндпоинта
   });
 });
