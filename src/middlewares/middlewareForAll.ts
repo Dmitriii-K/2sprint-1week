@@ -10,6 +10,21 @@ const urlPattern =
 const imailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const loginPattern = /^[a-zA-Z0-9_-]*$/;
 
+export const authCheckValidation = [
+  body("loginOrEmail")
+  .isString()
+  .withMessage("not string")
+  .trim()
+  .not()
+  .isEmpty(),
+  body("password")
+  .isString()
+  .withMessage("not string")
+  .trim()
+  .not()
+  .isEmpty(),
+]
+
 export const blogInputValidation = [
   body("name")
     .isString()

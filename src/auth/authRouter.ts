@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { checkAuthUser } from "./authController";
+import { authUser } from "./authController";
+import { authCheckValidation } from "../middlewares/middlewareForAll";
 
 export const authRouter = Router();
 
-authRouter.post("/login", checkAuthUser);
+authRouter.post("/login", authCheckValidation, authUser);
