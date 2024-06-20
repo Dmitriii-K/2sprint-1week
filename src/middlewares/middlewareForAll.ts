@@ -4,6 +4,7 @@ import { SETTINGS } from "../settings";
 import { blogCollection, userCollection } from "../db/mongo-db";
 import { ObjectId } from "mongodb";
 import { SortDirection } from "../input-output-types/eny-type";
+import { TypeUserPagination } from "../input-output-types/users-type";
 
 const urlPattern =
   /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
@@ -185,7 +186,7 @@ export const inputCheckErrorsMiddleware = (
 };
 
 export const authMiddleware = (
-  req: Request,
+  req: Request<any, any, any, any>,
   res: Response,
   next: NextFunction
 ) => {

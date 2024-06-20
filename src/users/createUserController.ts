@@ -11,8 +11,9 @@ export const createUserController = async (
   try {
     const saltRounds = 10;
     const password  = req.body;
-    const userHashPassword = await bcrypt.hash(password, saltRounds)
-
+    const salt = bcrypt.genSalt(saltRounds);
+    const userHashPassword = await bcrypt.hash(password, salt)
+    
     const createDate = new Date().toISOString();
     const newUser: UserDBModel = {
       login: req.body.login,

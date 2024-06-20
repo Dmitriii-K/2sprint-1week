@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { LoginInputModel } from "../input-output-types/auth-type";
 import { userCollection } from "../db/mongo-db";
 import { UserDBModel } from "../input-output-types/users-type";
+import { WithId } from "mongodb";
 const  bcrypt  =  require ( 'bcrypt' ); 
 
 
@@ -12,9 +13,10 @@ export const authUser = async (
   try {
   const saltRounds = 10;
   const { loginOrEmail, password } = req.body;
-  const userHashPassword = await bcrypt.hash(password, saltRounds);
+  const salt = bcrypt.genSalt(saltRounds);
+  const userHashPassword = await bcrypt.hash(password, salt);
 
-    const authUser: UserDBModel = await userCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
+    const authUser: WithId<UserDBModel> | null = await userCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
     if (!authUser) {
       res.status(401).json({ errorsMessages: [{field: 'user', message: 'user not found'}] });
     };
