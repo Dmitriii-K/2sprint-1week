@@ -3,7 +3,7 @@ import { LoginInputModel } from "../input-output-types/auth-type";
 import { userCollection } from "../db/mongo-db";
 import { UserDBModel } from "../input-output-types/users-type";
 import { WithId } from "mongodb";
-const  bcrypt  =  require ( 'bcrypt' ); 
+const  bcrypt  = require ( 'bcryptjs' ); 
 
 
 export const authUser = async (
@@ -11,16 +11,15 @@ export const authUser = async (
   res: Response
 ) => {
   try {
-  const saltRounds = 10;
-  const { loginOrEmail, password } = req.body;
-  const salt = bcrypt.genSalt(saltRounds);
-  const userHashPassword = await bcrypt.hash(password, salt);
+  const loginOrEmail = req.body.loginOrEmail;
+   const password = req.body.password;
 
     const authUser: WithId<UserDBModel> | null = await userCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
     if (!authUser) {
       res.status(401).json({ errorsMessages: [{field: 'user', message: 'user not found'}] });
+      return;
     };
-  const isCorrect = await bcrypt.compare(userHashPassword, authUser?.password);
+  const isCorrect = await bcrypt.compare( password, authUser?.password);
     if(isCorrect) {
       res.sendStatus(204);
     } else {

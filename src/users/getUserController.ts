@@ -30,16 +30,15 @@ export const getUserController = async (
     ? { login: { $regex: req.query.searchLoginTerm, $options: "i" } }
     : {};
   try {
+    const filter = { $or: [searchLogin, searchEmail]}
     const items: WithId<UserDBModel>[] = await userCollection
-      .find({
-        $and: [{ parameter1: searchEmail }, { parameter2: searchLogin }],
-      })
+      .find(filter)
       .sort(queryParams.sortBy, queryParams.sortDirection)
       .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
       .limit(queryParams.pageSize)
       .toArray();
-    const totalCount = await userCollection.countDocuments(searchEmail);
-    const newUser = {
+    const totalCount = await userCollection.countDocuments(filter);
+    const newUser: PaginatorUserViewModel = {
       pagesCount: Math.ceil(totalCount / queryParams.pageSize),
       page: queryParams.pageNumber,
       pageSize: queryParams.pageSize,

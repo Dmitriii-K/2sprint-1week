@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { UserInputModel, UserDBModel, UserViewModel } from "../input-output-types/users-type";
 import { userCollection } from "../db/mongo-db";
 import { OutputErrorsType } from "../input-output-types/output-errors-type";
-const  bcrypt  =  require ( 'bcrypt' ); 
+const  bcrypt  = require ( 'bcryptjs' ); 
 
 export const createUserController = async (
   req: Request<any, any, UserInputModel>,
@@ -10,8 +10,8 @@ export const createUserController = async (
 ) => {
   try {
     const saltRounds = 10;
-    const password  = req.body;
-    const salt = bcrypt.genSalt(saltRounds);
+    const password  = req.body.password;
+    const salt = await bcrypt.genSalt(saltRounds);
     const userHashPassword = await bcrypt.hash(password, salt)
     
     const createDate = new Date().toISOString();
@@ -25,6 +25,7 @@ export const createUserController = async (
     if (existingUser) {
       res.status(400).json({ errorsMessages: [{field: 'email and login', message: 'email and login should be unique'}]
         });
+        return;
     };
     const newUserDB = await userCollection.insertOne(newUser)!;
     if (newUserDB) {
@@ -37,6 +38,7 @@ export const createUserController = async (
       res.status(201).json(mapNewUser);
     } else {
       res.sendStatus(500);
+      return;
     }
   } catch (error) {
     console.log(error);
